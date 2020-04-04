@@ -43,6 +43,60 @@ public class ProductController {
         return new ResponseEntity<List<Product>>(products, HttpStatus.OK);
     }
 
+    @GetMapping("/{code}")
+    public ResponseEntity<Product> getProduct(@PathVariable int code) {
+        DatastoreService datastore = DatastoreServiceFactory
+                .getDatastoreService();
+        Query.Filter codeFilter = new Query.FilterPredicate("Code",
+                Query.FilterOperator.EQUAL, code);
+        Query query = new Query("Products").setFilter(codeFilter);
+        Entity productEntity = datastore.prepare(query).asSingleEntity();
+        if (productEntity != null) {
+            Product product = entityToProduct(productEntity);
+            return new ResponseEntity<Product>(product, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    @PutMapping(path = "/{code}")
+    public ResponseEntity<Product> updateProduct(@RequestBody Product
+                                                         product,
+                                                 @PathVariable("code")
+                                                         int code) {
+        DatastoreService datastore = DatastoreServiceFactory
+                .getDatastoreService();
+        Query.Filter codeFilter = new Query.FilterPredicate("Code",
+                Query.FilterOperator.EQUAL, code);
+        Query query = new Query("Products").setFilter(codeFilter);
+        Entity productEntity = datastore.prepare(query).asSingleEntity();
+        if (productEntity != null) {
+            productToEntity(product, productEntity);
+            datastore.put(productEntity);
+            product.setId(productEntity.getKey().getId());
+            return new ResponseEntity<Product>(product, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping(path = "/{code}")
+    public ResponseEntity<Product> deleteProduct(@PathVariable("code") int code) {
+        DatastoreService datastore = DatastoreServiceFactory
+                .getDatastoreService();
+        Query.Filter codeFilter = new Query.FilterPredicate("Code",
+                Query.FilterOperator.EQUAL, code);
+        Query query = new Query("Products").setFilter(codeFilter);
+        Entity productEntity = datastore.prepare(query).asSingleEntity();
+        if (productEntity != null) {
+            datastore.delete(productEntity.getKey());
+            Product product = entityToProduct(productEntity);
+            return new ResponseEntity<Product>(product, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
     private void productToEntity(Product product, Entity productEntity) {
         productEntity.setProperty("ProductID", product.getProductID());
