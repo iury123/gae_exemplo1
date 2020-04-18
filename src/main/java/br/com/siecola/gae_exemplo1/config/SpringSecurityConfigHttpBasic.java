@@ -30,6 +30,7 @@ public class SpringSecurityConfigHttpBasic extends WebSecurityConfigurerAdapter 
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("_ah/**").permitAll()
+                .antMatchers("/api/cron/testcron/**").anonymous()
                 .anyRequest().authenticated()
                 .and().httpBasic()
                 .and().sessionManagement()
