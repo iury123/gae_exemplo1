@@ -29,7 +29,7 @@ public class ProductController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<List<Product>> getProducts() {
         List<Product> products = new ArrayList<>();
         DatastoreService datastore = DatastoreServiceFactory
