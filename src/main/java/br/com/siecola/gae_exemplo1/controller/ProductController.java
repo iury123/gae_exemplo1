@@ -4,6 +4,7 @@ import br.com.siecola.gae_exemplo1.model.Product;
 import com.google.appengine.api.datastore.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class ProductController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Product>> getProducts() {
         List<Product> products = new ArrayList<>();
         DatastoreService datastore = DatastoreServiceFactory
